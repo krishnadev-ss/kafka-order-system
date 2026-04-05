@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: kafka-order-system
+  
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    
+    # Producer Configuration
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 10
+      buffer-memory: 33554432
+      properties:
+        linger.ms: 10
+        batch.size: 16384
+    
+    # Consumer Configuration
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: order-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      max-poll-records: 100
+      properties:
+        spring.json.trusted.packages: "*"
+        
+    # Topic Configuration
+    topic:
+      name: orders
+      partitions: 3
+      replication-factor: 1
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.example.kafkaordersystem: DEBUG
+    org.springframework.kafka: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
