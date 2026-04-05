@@ -1,0 +1,52 @@
+# Production Profile Configuration
+spring:
+  application:
+    name: kafka-order-system
+  
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka1:9092,kafka2:9092,kafka3:9092}
+    
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 5
+      batch-size: 32768
+      linger-ms: 20
+      compression-type: snappy
+      properties:
+        linger.ms: 20
+        batch.size: 32768
+        compression.type: snappy
+    
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka1:9092,kafka2:9092,kafka3:9092}
+      group-id: order-consumer-group-prod
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      max-poll-records: 500
+      session-timeout-ms: 30000
+      properties:
+        spring.json.trusted.packages: "*"
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+logging:
+  level:
+    root: WARN
+    com.example.kafkaordersystem: INFO
+    org.springframework.kafka: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/kafka-order-system.log
+    max-size: 10MB
+    max-history: 30
