@@ -1,64 +1,72 @@
 package com.example.kafkaordersystem.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * API Response wrapper class for consistent API responses
+ * Non-Lombok implementation (explicit getters/setters)
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ApiResponse<T> {
 
-    /**
-     * Response status: "success" or "error"
-     */
     @JsonProperty("status")
     private String status;
 
-    /**
-     * Response message
-     */
     @JsonProperty("message")
     private String message;
 
-    /**
-     * Response data (generic type)
-     */
     @JsonProperty("data")
     private T data;
 
-    /**
-     * Timestamp when response was generated
-     */
     @JsonProperty("timestamp")
     private Long timestamp;
 
-    /**
-     * Constructor for creating a success response
-     */
-    public static <T> ApiResponse<T> success(String message, T data) {
-        return ApiResponse.<T>builder()
-            .status("success")
-            .message(message)
-            .data(data)
-            .timestamp(System.currentTimeMillis())
-            .build();
+    public ApiResponse() {
     }
 
-    /**
-     * Constructor for creating an error response
-     */
+    public ApiResponse(String status, String message, T data, Long timestamp) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+        this.timestamp = timestamp;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>("success", message, data, System.currentTimeMillis());
+    }
+
     public static <T> ApiResponse<T> error(String message) {
-        return ApiResponse.<T>builder()
-            .status("error")
-            .message(message)
-            .timestamp(System.currentTimeMillis())
-            .build();
+        return new ApiResponse<>("error", message, null, System.currentTimeMillis());
     }
 }
