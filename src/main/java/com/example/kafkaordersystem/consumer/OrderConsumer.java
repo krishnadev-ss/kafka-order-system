@@ -1,7 +1,8 @@
 package com.example.kafkaordersystem.consumer;
 
 import com.example.kafkaordersystem.model.Order;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +13,12 @@ import org.springframework.stereotype.Service;
  * It automatically processes each order message as it arrives.
  *
  * @KafkaListener: Annotation that registers this method as a message listener
- * @Slf4j: Lombok annotation that creates a logger instance for this class
  * @Service: Marks this class as a Spring service component
  */
-@Slf4j
 @Service
 public class OrderConsumer {
+
+     private static final Logger log = LoggerFactory.getLogger(OrderConsumer.class);
 
     /**
      * Kafka listener method for consuming orders

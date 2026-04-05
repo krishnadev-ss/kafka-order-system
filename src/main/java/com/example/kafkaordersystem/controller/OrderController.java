@@ -1,8 +1,10 @@
+
 package com.example.kafkaordersystem.controller;
 
 import com.example.kafkaordersystem.model.Order;
 import com.example.kafkaordersystem.producer.OrderProducer;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +19,12 @@ import java.util.UUID;
  *
  * REST API controller for handling order-related HTTP requests.
  * Provides endpoints for creating and managing orders.
- *
- * @RestController: Marks this class as a controller with @ResponseBody on all methods
- * @RequestMapping: Maps all endpoints to /orders path
- * @Slf4j: Lombok annotation for logging
  */
-@Slf4j
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 
     @Autowired
     private OrderProducer orderProducer;

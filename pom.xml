@@ -39,12 +39,7 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <!-- Lombok for reducing boilerplate code -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
+        <!-- Lombok was removed (project uses explicit code) -->
 
         <!-- Jackson for JSON processing -->
         <dependency>
@@ -77,6 +72,7 @@
 
     <build>
         <plugins>
+            
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
