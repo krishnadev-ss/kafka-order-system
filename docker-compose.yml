@@ -54,6 +54,92 @@ services:
   # Access at http://localhost:8080 (note: conflict with Spring Boot, so we're not including it)
   # If you want to use it, change the port in application.yml to 8081
 
+  # Postgres service for Payment and Inventory services
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+    networks:
+      - kafka-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  order-service:
+    build: ./services/order-service
+    image: order-service:latest
+    container_name: order-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+    networks:
+      - kafka-network
+
+  payment-service:
+    build: ./services/payment-service
+    image: payment-service:latest
+    container_name: payment-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - kafka-network
+
+  inventory-service:
+    build: ./services/inventory-service
+    image: inventory-service:latest
+    container_name: inventory-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/inventory_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - kafka-network
+
+  notification-service:
+    build: ./services/notification-service
+    image: notification-service:latest
+    container_name: notification-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+    networks:
+      - kafka-network
+
 networks:
   kafka-network:
     driver: bridge
@@ -62,3 +148,4 @@ networks:
 volumes:
   kafka-data:
   zookeeper-data:
+  postgres-data:
